@@ -1,13 +1,18 @@
 import { useState } from "react";
+import API from "../api/api";
 
 function ReportLost() {
 
   const [formData, setFormData] = useState({
+    airportName: "",
+    passengerName: "",
+    email: "",
+    phone: "",
     itemName: "",
-    bagCode: "",
+    itemDescription: "",
+    bagTagNumber: "",
     ticketNumber: "",
-    airport: "",
-    description: ""
+    dateLost: ""
   });
 
   const handleChange = (e) => {
@@ -17,12 +22,16 @@ function ReportLost() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Lost Report Submitted:", formData);
-
-    alert("Lost item report submitted successfully!");
+    try {
+      await API.post("/lost-items", formData);
+      alert("✅ Lost item submitted successfully!");
+    } catch (err) {
+      console.log(err);
+      alert("❌ Error submitting lost item");
+    }
   };
 
   return (
@@ -31,53 +40,32 @@ function ReportLost() {
 
       <form className="card p-4 mt-3 shadow-sm" onSubmit={handleSubmit}>
 
-        {/* ITEM NAME */}
-        <input
-          className="form-control mb-2"
-          name="itemName"
-          placeholder="Item Name (e.g. Black Bag, Mobile)"
-          onChange={handleChange}
-        />
+        <input className="form-control mb-2" name="passengerName" placeholder="Your Name" onChange={handleChange} />
 
-        {/* BAG CODE (PROOF) */}
-        <input
-          className="form-control mb-2"
-          name="bagCode"
-          placeholder="Bag Tag Code (e.g. BG123456)"
-          onChange={handleChange}
-        />
+        <input className="form-control mb-2" name="email" placeholder="Email" onChange={handleChange} />
 
-        {/* TICKET NUMBER (PROOF) */}
-        <input
-          className="form-control mb-2"
-          name="ticketNumber"
-          placeholder="Flight Ticket Number (e.g. BGD12345)"
-          onChange={handleChange}
-        />
+        <input className="form-control mb-2" name="phone" placeholder="Phone" onChange={handleChange} />
 
-        {/* AIRPORT */}
-        <select
-          className="form-control mb-2"
-          name="airport"
-          onChange={handleChange}
-        >
+        <input className="form-control mb-2" name="itemName" placeholder="Item Name" onChange={handleChange} />
+
+        <textarea className="form-control mb-2" name="itemDescription" placeholder="Description" onChange={handleChange} />
+
+        <input className="form-control mb-2" name="bagTagNumber" placeholder="Bag Tag Number" onChange={handleChange} />
+
+        <input className="form-control mb-2" name="ticketNumber" placeholder="Ticket Number" onChange={handleChange} />
+
+        <select className="form-control mb-2" name="airportName" onChange={handleChange}>
           <option value="">Select Airport</option>
-          <option value="Dhaka">Hazrat Shahjalal International Airport</option>
-          <option value="Sylhet">Osmani International Airport</option>
-          <option value="Chattogram">Shah Amanat International Airport</option>
-          <option value="CoxBazar">Cox’s Bazar Airport</option>
-          <option value="Saidpur">Saidpur Airport</option>
+          <option value="Dhaka Airport">Hazrat Shahjalal International Airport</option>
+          <option value="Sylhet Airport">Osmani International Airport</option>
+          <option value="Chattogram Airport">Shah Amanat International Airport</option>
+          <option value="CoxBazar Airport">Cox’s Bazar Airport</option>
+          <option value="Saidpur Airport">Saidpur Airport</option>
         </select>
 
-        {/* DESCRIPTION */}
-        <textarea
-          className="form-control mb-2"
-          name="description"
-          placeholder="Item Description (color, brand, details...)"
-          onChange={handleChange}
-        />
+        <input type="date" className="form-control mb-2" name="dateLost" onChange={handleChange} />
 
-        <button className="btn btn-danger">
+        <button className="btn btn-danger w-100">
           Submit Lost Report
         </button>
 

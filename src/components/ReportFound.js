@@ -1,37 +1,66 @@
 import { useState } from "react";
+import API from "../api/api";
 
 function ReportFound() {
 
-  const [airport, setAirport] = useState("");
+  const [formData, setFormData] = useState({
+    airportName: "",
+    itemName: "",
+    itemDescription: "",
+    bagTagNumber: "",
+    ticketNumber: "",
+    dateFound: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await API.post("/found-items", formData);
+      alert("✅ Found item submitted successfully!");
+    } catch (err) {
+      console.log(err);
+      alert("❌ Error submitting found item");
+    }
+  };
 
   return (
     <div className="container mt-4">
       <h2>📍 Report Found Item</h2>
 
-      <div className="card p-4 mt-3 shadow-sm">
+      <form className="card p-4 mt-3 shadow-sm" onSubmit={handleSubmit}>
 
-        <input className="form-control mb-2" placeholder="Item Name" />
+        <input className="form-control mb-2" name="itemName" placeholder="Item Name" onChange={handleChange} />
 
-        <select
-          className="form-control mb-2"
-          value={airport}
-          onChange={(e) => setAirport(e.target.value)}
-        >
+        <textarea className="form-control mb-2" name="itemDescription" placeholder="Description" onChange={handleChange} />
+
+        <input className="form-control mb-2" name="bagTagNumber" placeholder="Bag Tag Number" onChange={handleChange} />
+
+        <input className="form-control mb-2" name="ticketNumber" placeholder="Ticket Number" onChange={handleChange} />
+
+        <select className="form-control mb-2" name="airportName" onChange={handleChange}>
           <option value="">Select Airport</option>
-          <option value="Dhaka">Hazrat Shahjalal International Airport (Dhaka)</option>
-          <option value="Sylhet">Osmani International Airport (Sylhet)</option>
-          <option value="Chattogram">Shah Amanat International Airport (Chattogram)</option>
-          <option value="CoxBazar">Cox’s Bazar Airport</option>
-          <option value="Saidpur">Saidpur Airport</option>
+          <option value="Dhaka Airport">Hazrat Shahjalal International Airport</option>
+          <option value="Sylhet Airport">Osmani International Airport</option>
+          <option value="Chattogram Airport">Shah Amanat International Airport</option>
+          <option value="CoxBazar Airport">Cox’s Bazar Airport</option>
+          <option value="Saidpur Airport">Saidpur Airport</option>
         </select>
 
-        <textarea className="form-control mb-2" placeholder="Description"></textarea>
+        <input type="date" className="form-control mb-2" name="dateFound" onChange={handleChange} />
 
-        <button className="btn btn-success">
+        <button className="btn btn-success w-100">
           Submit Found Report
         </button>
 
-      </div>
+      </form>
     </div>
   );
 }
