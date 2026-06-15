@@ -22,10 +22,10 @@ AirClaim BD is a Smart Airport Lost & Found Management System for Bangladesh air
 - Vercel
 
 ## Live Demo
-https://airclaim-bd.vercel.app/
+https://airclaim-bd-frontend.vercel.app/
 
 ## GitHub Repository
-https://github.com/RRAREF/airclaim-bd
+https://github.com/RRAREF/airclaim-bd-frontend
 
 ## Project Status
 Stage 1 Completed
