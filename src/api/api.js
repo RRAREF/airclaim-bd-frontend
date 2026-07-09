@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://airclaim-bd-backend-production.up.railway.app/api"
+    baseURL: "http://localhost:8080/api"
 });
 
 export default API;

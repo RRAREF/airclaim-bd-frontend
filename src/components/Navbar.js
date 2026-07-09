@@ -1,17 +1,31 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }) {
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
+
+    localStorage.removeItem("user");
+
     setIsLoggedIn(false);
+
+    alert("Logged Out Successfully");
+
+    navigate("/");
+
   };
 
   return (
     <nav className="navbar navbar-dark bg-primary px-3">
+
       <span className="navbar-brand">✈️ AirClaim BD</span>
 
       <div>
-        <Link className="btn btn-light btn-sm mx-1" to="/">Home</Link>
+
+        <Link className="btn btn-light btn-sm mx-1" to="/">
+          Home
+        </Link>
 
         {!isLoggedIn && (
           <>
@@ -27,6 +41,10 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
 
         {isLoggedIn && (
           <>
+            <Link className="btn btn-secondary btn-sm mx-1" to="/dashboard">
+              Dashboard
+            </Link>
+
             <Link className="btn btn-danger btn-sm mx-1" to="/lost">
               Report Lost
             </Link>
@@ -35,12 +53,21 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               Report Found
             </Link>
 
-            <button className="btn btn-dark btn-sm mx-1" onClick={handleLogout}>
+            <Link className="btn btn-warning btn-sm mx-1" to="/my-reports">
+              My Reports
+            </Link>
+
+            <button
+              className="btn btn-dark btn-sm mx-1"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           </>
         )}
+
       </div>
+
     </nav>
   );
 }
