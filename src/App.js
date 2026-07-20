@@ -3,12 +3,19 @@ import { useState } from "react";
 
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
-import ReportLost from "./components/ReportLost";
-import ReportFound from "./components/ReportFound";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
+import ReportLost from "./components/ReportLost";
+import ReportFound from "./components/ReportFound";
 import MyReports from "./components/MyReports";
+import Notifications from "./components/Notifications";
+
+import AdminLogin from "./components/AdminLogin";
+import AdminDashboard from "./components/AdminDashboard";
+import AdminUsers from "./components/AdminUsers";
+import AdminLostReports from "./components/AdminLostReports";
+import AdminFoundReports from "./components/AdminFoundReports";
 
 function App() {
 
@@ -16,7 +23,11 @@ function App() {
     localStorage.getItem("user") !== null
   );
 
+  const isAdminLoggedIn =
+    localStorage.getItem("admin") !== null;
+
   return (
+
     <BrowserRouter>
 
       <Navbar
@@ -26,10 +37,31 @@ function App() {
 
       <Routes>
 
-        {/* Home */}
-        <Route path="/" element={<Home />} />
+        {/* ================= Home ================= */}
 
-        {/* Dashboard */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
+
+        {/* ================= User Authentication ================= */}
+
+        <Route
+          path="/login"
+          element={
+            <Login
+              setIsLoggedIn={setIsLoggedIn}
+            />
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={<Signup />}
+        />
+
+        {/* ================= User Dashboard ================= */}
+
         <Route
           path="/dashboard"
           element={
@@ -39,7 +71,6 @@ function App() {
           }
         />
 
-        {/* Report Lost */}
         <Route
           path="/lost"
           element={
@@ -49,7 +80,6 @@ function App() {
           }
         />
 
-        {/* Report Found */}
         <Route
           path="/found"
           element={
@@ -59,7 +89,6 @@ function App() {
           }
         />
 
-        {/* My Reports */}
         <Route
           path="/my-reports"
           element={
@@ -69,22 +98,64 @@ function App() {
           }
         />
 
-        {/* Login */}
         <Route
-          path="/login"
-          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+          path="/notifications"
+          element={
+            isLoggedIn
+              ? <Notifications />
+              : <Login setIsLoggedIn={setIsLoggedIn} />
+          }
         />
 
-        {/* Signup */}
+        {/* ================= Admin ================= */}
+
         <Route
-          path="/signup"
-          element={<Signup />}
+          path="/admin-login"
+          element={<AdminLogin />}
+        />
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            isAdminLoggedIn
+              ? <AdminDashboard />
+              : <AdminLogin />
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            isAdminLoggedIn
+              ? <AdminUsers />
+              : <AdminLogin />
+          }
+        />
+
+        <Route
+          path="/admin/lost-reports"
+          element={
+            isAdminLoggedIn
+              ? <AdminLostReports />
+              : <AdminLogin />
+          }
+        />
+
+        <Route
+          path="/admin/found-items"
+          element={
+            isAdminLoggedIn
+              ? <AdminFoundReports />
+              : <AdminLogin />
+          }
         />
 
       </Routes>
 
     </BrowserRouter>
+
   );
+
 }
 
 export default App;

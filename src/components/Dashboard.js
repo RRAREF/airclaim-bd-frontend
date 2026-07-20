@@ -6,25 +6,35 @@ function Dashboard() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const [stats, setStats] = useState({
-        lostReports: 0,
-        foundReports: 0,
+        totalLostReports: 0,
+        totalFoundReports: 0,
         matchedReports: 0,
         pendingReports: 0
     });
 
     useEffect(() => {
 
-        loadStats();
+        if (user?.email) {
+            loadStats();
+        }
 
+        // eslint-disable-next-line
     }, []);
 
     const loadStats = async () => {
 
         try {
 
-            const res = await API.get("/dashboard/stats");
+            const res = await API.get(`/dashboard/stats/${user.email}`);
 
-            setStats(res.data);
+            console.log(res.data);
+
+            setStats({
+                totalLostReports: res.data.totalLostReports || 0,
+                totalFoundReports: res.data.totalFoundReports || 0,
+                matchedReports: res.data.matchedReports || 0,
+                pendingReports: res.data.pendingReports || 0
+            });
 
         } catch (error) {
 
@@ -64,7 +74,7 @@ function Dashboard() {
 
                             <h5>Total Lost Reports</h5>
 
-                            <h2>{stats.lostReports}</h2>
+                            <h2>{stats.totalLostReports}</h2>
 
                         </div>
 
@@ -80,7 +90,7 @@ function Dashboard() {
 
                             <h5>Total Found Reports</h5>
 
-                            <h2>{stats.foundReports}</h2>
+                            <h2>{stats.totalFoundReports}</h2>
 
                         </div>
 

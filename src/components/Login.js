@@ -31,12 +31,19 @@ function Login({ setIsLoggedIn }) {
         // Save logged-in user
         localStorage.setItem("user", JSON.stringify(res.data));
 
+        // Save email separately (used by Notifications)
+        localStorage.setItem("email", user.email);
+
+        // If your backend returns user name, save it too
+        if (res.data.name) {
+          localStorage.setItem("name", res.data.name);
+        }
+
         // Update login state
         setIsLoggedIn(true);
 
         alert("Login Successful");
 
-        // Go to dashboard
         navigate("/dashboard");
 
       } else {
@@ -59,29 +66,50 @@ function Login({ setIsLoggedIn }) {
 
     <div className="container mt-4">
 
-      <h2>Login</h2>
+      <div className="row justify-content-center">
 
-      <input
-        className="form-control my-2"
-        name="email"
-        placeholder="Email"
-        onChange={handleChange}
-      />
+        <div className="col-md-5">
 
-      <input
-        className="form-control my-2"
-        type="password"
-        name="password"
-        placeholder="Password"
-        onChange={handleChange}
-      />
+          <div className="card shadow">
 
-      <button
-        className="btn btn-primary"
-        onClick={handleLogin}
-      >
-        Login
-      </button>
+            <div className="card-body">
+
+              <h2 className="text-center mb-4">
+                Login
+              </h2>
+
+              <input
+                type="email"
+                className="form-control my-3"
+                name="email"
+                placeholder="Email"
+                value={user.email}
+                onChange={handleChange}
+              />
+
+              <input
+                type="password"
+                className="form-control my-3"
+                name="password"
+                placeholder="Password"
+                value={user.password}
+                onChange={handleChange}
+              />
+
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleLogin}
+              >
+                Login
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
