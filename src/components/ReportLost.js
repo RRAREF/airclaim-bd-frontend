@@ -1,4 +1,17 @@
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaPlaneDeparture,
+  FaBoxOpen,
+  FaTag,
+  FaTicketAlt,
+  FaCalendarAlt,
+  FaCamera,
+  FaExclamationTriangle
+} from "react-icons/fa";
 import BagTagSuggestions from "./BagTagSuggestions";
 import TicketSuggestions from "./TicketSuggestions";
 import LoadingSpinner from "./LoadingSpinner";
@@ -23,6 +36,23 @@ const INITIAL_FORM = {
   ticketNumber: "",
   dateLost: "",
   image: null
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.06, duration: 0.5, ease: "easeOut" }
+  })
+};
+
+const getLocalToday = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 function ReportLost() {
@@ -174,7 +204,7 @@ function ReportLost() {
 
         const [suggestRes, duplicateRes] = await Promise.all([
           API.get(`/lost-items/search-ticket?keyword=${encodeURIComponent(value)}`),
-          API.get(`/lost-items/check-ticket?ticketNumber=${encodeURIComponent(value)}`)
+          API.get(`/lost-items/check-ticket?ticket=${encodeURIComponent(value)}`)
         ]);
 
         setTicketSuggestions(suggestRes.data || []);
@@ -267,75 +297,142 @@ function ReportLost() {
   const isSubmitDisabled = loading || bagDuplicate || ticketDuplicate;
 
   return (
-    <div className="container mt-4 mb-5">
-      <div className="card shadow-sm border-0 rounded-4">
-        <div className="card-body p-4">
-          <h2 className="mb-4 fw-bold text-danger">
-            <i className="bi bi-bag-x me-2"></i>
-            Report Lost Item
-          </h2>
+    <div style={{ background: "linear-gradient(180deg, #fff5f5 0%, #ffffff 35%)" }}>
+      <div className="container py-4">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          className="mx-auto rounded-4 p-4 p-md-5 position-relative overflow-hidden"
+          style={{
+            maxWidth: "760px",
+            background: "rgba(255,255,255,0.8)",
+            backdropFilter: "blur(12px)",
+            boxShadow: "0 20px 45px rgba(220,38,38,0.12)",
+            border: "1px solid rgba(255,224,224,0.9)"
+          }}
+        >
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="position-absolute d-none d-md-block"
+            style={{ top: "-16px", right: "-10px", fontSize: "5rem", opacity: 0.06 }}
+          >
+            <FaBoxOpen color="#dc2626" />
+          </motion.div>
+
+          <motion.div variants={fadeUp} custom={1} className="mb-4">
+            <div className="d-flex align-items-center gap-3">
+              <div
+                className="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                style={{
+                  width: "52px",
+                  height: "52px",
+                  background: "linear-gradient(135deg, #ef4444, #dc2626)"
+                }}
+              >
+                <FaBoxOpen size={22} color="#ffffff" />
+              </div>
+              <div>
+                <h2
+                  className="fw-bold mb-0"
+                  style={{
+                    fontFamily: "'Poppins', sans-serif",
+                    background: "linear-gradient(90deg, #dc2626, #ef4444)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent"
+                  }}
+                >
+                  Report Lost Item
+                </h2>
+                <p className="text-secondary mb-0 small">
+                  Tell us what you lost and we'll help you track it down
+                </p>
+              </div>
+            </div>
+          </motion.div>
 
           <form onSubmit={handleSubmit} noValidate>
-            <div className="row g-3 mb-3">
+            <motion.div variants={fadeUp} custom={2} className="row g-3 mb-3">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Passenger Name</label>
-                <input
-                  type="text"
-                  className="form-control rounded-3 bg-light"
-                  value={loggedInUser?.name || ""}
-                  readOnly
-                />
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaUser color="#dc2626" size={14} />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 bg-light"
+                    value={loggedInUser?.name || ""}
+                    readOnly
+                  />
+                </div>
               </div>
 
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Email</label>
-                <input
-                  type="email"
-                  className="form-control rounded-3 bg-light"
-                  value={loggedInUser?.email || ""}
-                  readOnly
-                />
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaEnvelope color="#dc2626" size={14} />
+                  </span>
+                  <input
+                    type="email"
+                    className="form-control border-start-0 bg-light"
+                    value={loggedInUser?.email || ""}
+                    readOnly
+                  />
+                </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="row g-3 mb-3">
+            <motion.div variants={fadeUp} custom={3} className="row g-3 mb-3">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">
                   Phone Number <span className="text-danger">*</span>
                 </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  className={`form-control rounded-3 ${errors.phone ? "is-invalid" : ""}`}
-                  placeholder="e.g. 017XXXXXXXX"
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-                {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaPhoneAlt color="#dc2626" size={14} />
+                  </span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className={`form-control border-start-0 ${errors.phone ? "is-invalid" : ""}`}
+                    placeholder="e.g. 017XXXXXXXX"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+                {errors.phone && <div className="text-danger small mt-1">{errors.phone}</div>}
               </div>
 
               <div className="col-md-6">
                 <label className="form-label fw-semibold">
                   Airport <span className="text-danger">*</span>
                 </label>
-                <select
-                  name="airportName"
-                  className={`form-select rounded-3 ${errors.airportName ? "is-invalid" : ""}`}
-                  value={formData.airportName}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Airport</option>
-                  {AIRPORTS.map((airport) => (
-                    <option key={airport.value} value={airport.value}>
-                      {airport.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.airportName && <div className="invalid-feedback">{errors.airportName}</div>}
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaPlaneDeparture color="#dc2626" size={14} />
+                  </span>
+                  <select
+                    name="airportName"
+                    className={`form-select border-start-0 ${errors.airportName ? "is-invalid" : ""}`}
+                    value={formData.airportName}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Airport</option>
+                    {AIRPORTS.map((airport) => (
+                      <option key={airport.value} value={airport.value}>
+                        {airport.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {errors.airportName && <div className="text-danger small mt-1">{errors.airportName}</div>}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="mb-3">
+            <motion.div variants={fadeUp} custom={4} className="mb-3">
               <label className="form-label fw-semibold">
                 Item Name <span className="text-danger">*</span>
               </label>
@@ -348,9 +445,9 @@ function ReportLost() {
                 onChange={handleChange}
               />
               {errors.itemName && <div className="invalid-feedback">{errors.itemName}</div>}
-            </div>
+            </motion.div>
 
-            <div className="mb-3">
+            <motion.div variants={fadeUp} custom={5} className="mb-3">
               <label className="form-label fw-semibold">
                 Item Description <span className="text-danger">*</span>
               </label>
@@ -363,23 +460,28 @@ function ReportLost() {
                 onChange={handleChange}
               />
               {errors.itemDescription && <div className="invalid-feedback">{errors.itemDescription}</div>}
-            </div>
+            </motion.div>
 
-            <div className="row g-3 mb-2">
+            <motion.div variants={fadeUp} custom={6} className="row g-3 mb-2">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">
                   Bag Tag Number <span className="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  className={`form-control rounded-3 ${
-                    errors.bagTagNumber || bagDuplicate ? "is-invalid" : ""
-                  }`}
-                  placeholder="e.g. BG123456"
-                  value={formData.bagTagNumber}
-                  onChange={(e) => searchBagTag(e.target.value)}
-                />
-                {errors.bagTagNumber && <div className="invalid-feedback">{errors.bagTagNumber}</div>}
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaTag color="#dc2626" size={14} />
+                  </span>
+                  <input
+                    type="text"
+                    className={`form-control border-start-0 ${
+                      errors.bagTagNumber || bagDuplicate ? "is-invalid" : ""
+                    }`}
+                    placeholder="e.g. BG123456"
+                    value={formData.bagTagNumber}
+                    onChange={(e) => searchBagTag(e.target.value)}
+                  />
+                </div>
+                {errors.bagTagNumber && <div className="text-danger small mt-1">{errors.bagTagNumber}</div>}
 
                 {searchingBag && <LoadingSpinner text="Checking Bag Tag..." />}
 
@@ -400,16 +502,21 @@ function ReportLost() {
                 <label className="form-label fw-semibold">
                   Ticket Number <span className="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  className={`form-control rounded-3 ${
-                    errors.ticketNumber || ticketDuplicate ? "is-invalid" : ""
-                  }`}
-                  placeholder="e.g. TK987654"
-                  value={formData.ticketNumber}
-                  onChange={(e) => searchTicket(e.target.value)}
-                />
-                {errors.ticketNumber && <div className="invalid-feedback">{errors.ticketNumber}</div>}
+                <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                  <span className="input-group-text bg-white border-end-0">
+                    <FaTicketAlt color="#dc2626" size={14} />
+                  </span>
+                  <input
+                    type="text"
+                    className={`form-control border-start-0 ${
+                      errors.ticketNumber || ticketDuplicate ? "is-invalid" : ""
+                    }`}
+                    placeholder="e.g. TK987654"
+                    value={formData.ticketNumber}
+                    onChange={(e) => searchTicket(e.target.value)}
+                  />
+                </div>
+                {errors.ticketNumber && <div className="text-danger small mt-1">{errors.ticketNumber}</div>}
 
                 {searchingTicket && <LoadingSpinner text="Checking Ticket Number..." />}
 
@@ -425,33 +532,45 @@ function ReportLost() {
                   }
                 />
               </div>
-            </div>
+            </motion.div>
 
-            {(bagDuplicate || ticketDuplicate) && (
-              <div className="alert alert-warning d-flex align-items-center rounded-3 mt-2">
-                <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                Please enter a unique Bag Tag Number and Ticket Number.
-              </div>
-            )}
+            <AnimatePresence>
+              {(bagDuplicate || ticketDuplicate) && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="alert alert-warning d-flex align-items-center rounded-3 mt-2"
+                >
+                  <FaExclamationTriangle className="me-2 flex-shrink-0" />
+                  Please enter a unique Bag Tag Number and Ticket Number.
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <div className="mb-3 mt-2">
+            <motion.div variants={fadeUp} custom={7} className="mb-3 mt-2">
               <label className="form-label fw-semibold">
                 Date Lost <span className="text-danger">*</span>
               </label>
-              <input
-                type="date"
-                name="dateLost"
-                className={`form-control rounded-3 ${errors.dateLost ? "is-invalid" : ""}`}
-                value={formData.dateLost}
-                onChange={handleChange}
-                max={new Date().toISOString().split("T")[0]}
-              />
-              {errors.dateLost && <div className="invalid-feedback">{errors.dateLost}</div>}
-            </div>
+              <div className="input-group rounded-3 overflow-hidden shadow-sm">
+                <span className="input-group-text bg-white border-end-0">
+                  <FaCalendarAlt color="#dc2626" size={14} />
+                </span>
+                <input
+                  type="date"
+                  name="dateLost"
+                  className={`form-control border-start-0 ${errors.dateLost ? "is-invalid" : ""}`}
+                  value={formData.dateLost}
+                  onChange={handleChange}
+                  max={getLocalToday()}
+                />
+              </div>
+              {errors.dateLost && <div className="text-danger small mt-1">{errors.dateLost}</div>}
+            </motion.div>
 
-            <div className="mb-3">
+            <motion.div variants={fadeUp} custom={8} className="mb-3">
               <label className="form-label fw-bold">
-                <i className="bi bi-camera me-1"></i>
+                <FaCamera className="me-1" color="#dc2626" />
                 Upload Item Photo
               </label>
               <input
@@ -467,24 +586,29 @@ function ReportLost() {
                 preview={preview}
                 onRemove={handleRemoveImage}
               />
-            </div>
+            </motion.div>
 
-            <button
-              type="submit"
-              className="btn btn-danger w-100 rounded-3 py-2 fw-semibold mt-2"
-              disabled={isSubmitDisabled}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit Lost Report"
-              )}
-            </button>
+            <motion.div variants={fadeUp} custom={9}>
+              <motion.button
+                type="submit"
+                whileHover={{ scale: isSubmitDisabled ? 1 : 1.02, boxShadow: "0 10px 25px rgba(220,38,38,0.3)" }}
+                whileTap={{ scale: isSubmitDisabled ? 1 : 0.97 }}
+                className="btn w-100 text-white py-2 rounded-pill fw-semibold border-0 mt-2"
+                style={{ background: "linear-gradient(90deg, #ef4444, #dc2626)" }}
+                disabled={isSubmitDisabled}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Lost Report"
+                )}
+              </motion.button>
+            </motion.div>
           </form>
-        </div>
+        </motion.div>
       </div>
 
       <ToastMessage

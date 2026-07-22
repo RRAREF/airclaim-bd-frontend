@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaSearch, FaTimes, FaUsers, FaTrash, FaExclamationTriangle } from "react-icons/fa";
 import API from "../api/api";
 import LoadingSpinner from "./LoadingSpinner";
 import ToastMessage from "./ToastMessage";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: Math.min(i, 10) * 0.04, duration: 0.4, ease: "easeOut" }
+  })
+};
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -80,16 +91,38 @@ function AdminUsers() {
   };
 
   return (
-    <div className="container mt-4 mb-5">
-      <div className="card shadow-sm border-0 rounded-4">
-        <div className="card-body p-4">
+    <div style={{ background: "linear-gradient(180deg, #f4f8ff 0%, #ffffff 30%)" }}>
+      <div className="container py-4">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={0}
+          className="rounded-4 p-4 p-md-5"
+          style={{
+            background: "rgba(255,255,255,0.8)",
+            backdropFilter: "blur(12px)",
+            boxShadow: "0 20px 45px rgba(37,99,235,0.1)"
+          }}
+        >
           <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
-            <h2 className="fw-bold text-primary mb-0">
-              <i className="bi bi-people-fill me-2"></i>
+            <h2
+              className="fw-bold mb-0 d-flex align-items-center"
+              style={{
+                fontFamily: "'Poppins', sans-serif",
+                background: "linear-gradient(90deg, #1d4ed8, #2563eb, #38bdf8)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}
+            >
+              <FaUsers className="me-2" style={{ WebkitTextFillColor: "#2563eb" }} />
               Manage Users
             </h2>
 
-            <span className="badge bg-primary rounded-pill fs-6">
+            <span
+              className="badge rounded-pill fs-6 px-3 py-2"
+              style={{ background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff" }}
+            >
               {filteredUsers.length} of {users.length} user
               {users.length !== 1 ? "s" : ""}
             </span>
@@ -98,7 +131,7 @@ function AdminUsers() {
           <div className="mb-4">
             <div className="input-group rounded-3 shadow-sm">
               <span className="input-group-text bg-white border-end-0">
-                <i className="bi bi-search"></i>
+                <FaSearch color="#2563eb" size={14} />
               </span>
               <input
                 type="text"
@@ -113,7 +146,7 @@ function AdminUsers() {
                   className="btn btn-outline-secondary"
                   onClick={() => setSearchTerm("")}
                 >
-                  <i className="bi bi-x-lg"></i>
+                  <FaTimes />
                 </button>
               )}
             </div>
@@ -122,21 +155,24 @@ function AdminUsers() {
           {loading && <LoadingSpinner text="Loading users..." />}
 
           {!loading && filteredUsers.length === 0 && (
-            <div className="alert alert-warning rounded-3 text-center mb-0">
-              <i className="bi bi-exclamation-circle me-2"></i>
+            <div
+              className="alert border-0 rounded-3 text-center mb-0 d-flex align-items-center justify-content-center gap-2"
+              style={{ background: "#fef3c7", color: "#92400e" }}
+            >
+              <FaExclamationTriangle />
               {users.length === 0 ? "No users found." : "No users match your search."}
             </div>
           )}
 
           {!loading && filteredUsers.length > 0 && (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle rounded-3 overflow-hidden">
-                <thead className="table-primary">
+            <div className="table-responsive rounded-4 overflow-hidden" style={{ boxShadow: "0 8px 24px rgba(15,23,42,0.06)" }}>
+              <table className="table table-hover align-middle mb-0">
+                <thead style={{ background: "linear-gradient(90deg, #dbeafe, #eff6ff)" }}>
                   <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col" className="text-end">
+                    <th scope="col" className="py-3">ID</th>
+                    <th scope="col" className="py-3">Name</th>
+                    <th scope="col" className="py-3">Email</th>
+                    <th scope="col" className="text-end py-3">
                       Action
                     </th>
                   </tr>
@@ -148,24 +184,27 @@ function AdminUsers() {
                       <td>{user.name}</td>
                       <td>{user.email}</td>
                       <td className="text-end">
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           type="button"
-                          className="btn btn-danger btn-sm rounded-3"
+                          className="btn btn-sm rounded-3 d-inline-flex align-items-center gap-1 border-0"
+                          style={{ background: "#fee2e2", color: "#dc2626" }}
                           disabled={deletingId === user.id}
                           onClick={() => requestDelete(user)}
                         >
                           {deletingId === user.id ? (
                             <>
-                              <span className="spinner-border spinner-border-sm me-1" role="status" />
+                              <span className="spinner-border spinner-border-sm" role="status" />
                               Deleting...
                             </>
                           ) : (
                             <>
-                              <i className="bi bi-trash me-1"></i>
+                              <FaTrash size={12} />
                               Delete
                             </>
                           )}
-                        </button>
+                        </motion.button>
                       </td>
                     </tr>
                   ))}
@@ -173,55 +212,64 @@ function AdminUsers() {
               </table>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
-      {confirmUser && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
-          onClick={cancelDelete}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {confirmUser && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="modal fade show d-block"
+            tabIndex="-1"
+            style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+            onClick={cancelDelete}
           >
-            <div className="modal-content border-0 rounded-4">
-              <div className="modal-header border-0">
-                <h5 className="modal-title">
-                  <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
-                  Confirm Deletion
-                </h5>
-                <button type="button" className="btn-close" onClick={cancelDelete}></button>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="modal-dialog modal-dialog-centered"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content border-0 rounded-4">
+                <div className="modal-header border-0">
+                  <h5 className="modal-title d-flex align-items-center gap-2">
+                    <FaExclamationTriangle color="#dc2626" />
+                    Confirm Deletion
+                  </h5>
+                  <button type="button" className="btn-close" onClick={cancelDelete}></button>
+                </div>
+                <div className="modal-body">
+                  <p className="mb-0">
+                    Are you sure you want to delete this user
+                    {confirmUser.name ? ` (${confirmUser.name})` : ""}?
+                  </p>
+                </div>
+                <div className="modal-footer border-0">
+                  <button
+                    type="button"
+                    className="btn btn-secondary rounded-3"
+                    onClick={cancelDelete}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger rounded-3"
+                    onClick={confirmDelete}
+                    disabled={deletingId === confirmUser.id}
+                  >
+                    {deletingId === confirmUser.id ? "Deleting..." : "Yes, Delete"}
+                  </button>
+                </div>
               </div>
-              <div className="modal-body">
-                <p className="mb-0">
-                  Are you sure you want to delete this user
-                  {confirmUser.name ? ` (${confirmUser.name})` : ""}?
-                </p>
-              </div>
-              <div className="modal-footer border-0">
-                <button
-                  type="button"
-                  className="btn btn-secondary rounded-3"
-                  onClick={cancelDelete}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger rounded-3"
-                  onClick={confirmDelete}
-                  disabled={deletingId === confirmUser.id}
-                >
-                  {deletingId === confirmUser.id ? "Deleting..." : "Yes, Delete"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ToastMessage
         show={toast.show}
